@@ -1,0 +1,34 @@
+services:
+  
+  mysql:
+    image: mysql:latest
+    container_name: sql-docker
+    environment:
+      MYSQL_ROOT_PASSWORD: senha123
+      MYSQL_DATABASE: ${database}
+      MYSQL_USER: ${user}
+      MYSQL_PASSWORD: ${password}
+    ports:
+      - "3005:3005"
+    volumes:
+      - volume-sql:/var/lib/mysql
+      - ./criadb.sql:/docker-entrypoint-initdb.d/criadb.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  
+  web:
+    build: .
+    ports:
+      - "${APP_PORT}:3000"
+    env_file:
+      - .env
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  
+volumes:
+  volume-sql:

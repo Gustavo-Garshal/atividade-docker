@@ -2,10 +2,10 @@ const express = require("express")
 const mysql = require("mysql2")
 const app = express()
 const db = mysql.createConnection({
-    host: "sql-docker",
-    user: "root",
-    password: "senha123",
-    database: "dbdocker"
+    host: process.env.host,
+    user: process.env.user,
+    password: process.env.password,
+    database: process.env.database
 })
 
 app.get("/produtos", (req, res) => {
