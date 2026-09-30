@@ -9,26 +9,33 @@ services:
       MYSQL_USER: ${user}
       MYSQL_PASSWORD: ${password}
     ports:
-      - "3005:3005"
+      - "${SQL_PORT}:3006"
     volumes:
       - volume-sql:/var/lib/mysql
       - ./criadb.sql:/docker-entrypoint-initdb.d/criadb.sql
+    mem_limit: 128m
+    memswap_limit: 512m
+    cpus: 0.2
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
       timeout: 5s
       retries: 5
-  
+      start_period: 360s
+
   web:
+    container_name: atv-docker
     build: .
     ports:
       - "${APP_PORT}:3000"
     env_file:
       - .env
+    mem_limit: 128m
+    memswap_limit: 512m
+    cpus: 0.2
     depends_on:
       mysql:
         condition: service_healthy
-
   
 volumes:
   volume-sql:
